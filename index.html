@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جامعة الصالحية الجديدة - نظام الشكاوى الطلابية</title>
+    <!-- خط تجوال من Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #003366;
+            --secondary-color: #0055a5;
+            --accent-color: #d99b26;
+            --bg-color: #f4f7f9;
+            --text-color: #333;
+            --error-color: #e74c3c;
+            --success-color: #2ecc71;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: linear-gradient(135deg, #eef2f5 0%, #dbe5ed 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: #ffffff;
+            width: 100%;
+            max-width: 420px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            border: 1px solid #e1e8ed;
+        }
+
+        .header {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 4px solid var(--accent-color);
+        }
+
+        .header h1 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .form-container {
+            padding: 30px 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.3s ease;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(0, 85, 165, 0.1);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 13px;
+            background-color: var(--primary-color);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-submit:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        .alert-box {
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-bottom: 18px;
+            display: none;
+            text-align: center;
+        }
+
+        .alert-danger {
+            background-color: #fde8e8;
+            color: var(--error-color);
+            border: 1px solid #f8b4b4;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 15px;
+            background-color: #f9fbfd;
+            border-top: 1px solid #eee;
+            font-size: 12px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <div class="header">
+            <h1>جامعة الصالحية الجديدة</h1>
+            <p>نظام الشكاوى الطلابية</p>
+        </div>
+
+        <div class="form-container">
+            <div id="alertBox" class="alert-box alert-danger"></div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="studentCode">كود الطالب</label>
+                    <input type="text" id="studentCode" placeholder="أدخل كود الطالب" required autocomplete="username">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">كلمة المرور</label>
+                    <input type="password" id="password" placeholder="أدخل كلمة المرور" required autocomplete="current-password">
+                </div>
+
+                <button type="submit" id="submitBtn" class="btn-submit">تسجيل الدخول</button>
+            </form>
+        </div>
+
+        <div class="footer">
+            جميع الحقوق محفوظة &copy; جامعة الصالحية الجديدة
+        </div>
+    </div>
+
+    <script>
+        // إعدادات اتصال Supabase REST API
+        const SUPABASE_URL = "https://xyzrsgareswgtcehnbfi.supabase.co/rest/v1/";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh5enJzZ2FyZXN3Z3RjZWhuYmZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1ODE0NzIsImV4cCI6MjEwNjE1NzQ3Mn0.kMdLDkMGyYKku9HukiSNAkru50-ZuUv98GN1uqYQtB8";
+
+        const headers = {
+            "apikey": SUPABASE_ANON_KEY,
+            "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+            "Content-Type": "application/json"
+        };
+
+        const loginForm = document.getElementById('loginForm');
+        const studentCodeInput = document.getElementById('studentCode');
+        const passwordInput = document.getElementById('password');
+        const alertBox = document.getElementById('alertBox');
+        const submitBtn = document.getElementById('submitBtn');
+
+        function showAlert(message) {
+            alertBox.textContent = message;
+            alertBox.style.display = 'block';
+        }
+
+        function hideAlert() {
+            alertBox.style.display = 'none';
+        }
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideAlert();
+
+            const studentCode = studentCodeInput.value.trim();
+            const password = passwordInput.value.trim();
+
+            if (!studentCode || !password) {
+                showAlert('يرجى كتابة كود الطالب وكلمة المرور.');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'جاري التحقق...';
+
+            try {
+                // 1. التحقق من وجود الطالب وكلمة المرور
+                const studentUrl = `${SUPABASE_URL}students?student_code=eq.${encodeURIComponent(studentCode)}&password=eq.${encodeURIComponent(password)}&select=*`;
+                const studentRes = await fetch(studentUrl, { method: 'GET', headers });
+
+                if (!studentRes.ok) {
+                    throw new Error('حدث خطأ في الاتصال بقاعدة البيانات.');
+                }
+
+                const students = await studentRes.json();
+
+                if (students.length === 0) {
+                    showAlert('كود الطالب أو كلمة المرور غير صحيحة.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'تسجيل الدخول';
+                    return;
+                }
+
+                const studentData = students[0];
+
+                // 2. فحص آخر شكوى قدمها الطالب للتأكد من شرط الـ 24 ساعة
+                const complaintUrl = `${SUPABASE_URL}complaints?student_code=eq.${encodeURIComponent(studentCode)}&order=created_at.desc&limit=1&select=created_at`;
+                const complaintRes = await fetch(complaintUrl, { method: 'GET', headers });
+
+                let canSubmit = true;
+                let nextAllowedTime = null;
+
+                if (complaintRes.ok) {
+                    const lastComplaints = await complaintRes.json();
+                    if (lastComplaints.length > 0) {
+                        const lastDate = new Date(lastComplaints[0].created_at);
+                        const now = new Date();
+                        const diffHours = (now - lastDate) / (1000 * 60 * 60);
+
+                        if (diffHours < 24) {
+                            canSubmit = false;
+                            nextAllowedTime = new Date(lastDate.getTime() + (24 * 60 * 60 * 1000));
+                        }
+                    }
+                }
+
+                // 3. حفظ بيانات الجلسة لنقلها لصفحة الطالب
+                const sessionData = {
+                    student: studentData,
+                    canSubmit: canSubmit,
+                    nextAllowedTime: nextAllowedTime ? nextAllowedTime.toISOString() : null
+                };
+
+                localStorage.setItem('studentSession', JSON.stringify(sessionData));
+
+                // 4. التوجيه لصفحة الطالب
+                window.location.href = 'student.html';
+
+            } catch (err) {
+                console.error(err);
+                showAlert('فشل الاتصال بالخادم، يرجى المحاولة لاحقاً.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'تسجيل الدخول';
+            }
+        });
+
+
+        
+    // منع القائمة المنسدلة عند الضغط بزر الفأرة الأيمن
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+    });
+
+    // منع اختصارات لوحة المفاتيح الخاصة بأدوات المطور
+    document.addEventListener('keydown', function(e) {
+        // منع F12
+        if (e.key === "F12") {
+            e.preventDefault();
+        }
+        // منع Ctrl+Shift+I / Ctrl+Shift+J / Ctrl+Shift+C
+        if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) {
+            e.preventDefault();
+        }
+        // منع Ctrl+U (عرض مصدر الصفحة)
+        if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) {
+            e.preventDefault();
+        }
+    });
+    setInterval(function() {
+        const startTime = performance.now();
+        debugger; // يوقف تنفيذ الكود إذا كانت أدوات المطور مفتوحة
+        const endTime = performance.now();
+        if (endTime - startTime > 100) {
+            // إذا اكتشف فتح F12، يتم توجيه المستخدم أو إعادة تحميل الصفحة
+            window.location.reload();
+        }
+    }, 1000);
+    </script>
+</body>
+</html>

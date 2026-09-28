@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جامعة الصالحية الجديدة - تقديم شكوى</title>
+    <!-- خط تجوال من Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #003366;
+            --secondary-color: #0055a5;
+            --accent-color: #d99b26;
+            --bg-color: #f4f7f9;
+            --text-color: #333;
+            --error-color: #e74c3c;
+            --success-color: #2ecc71;
+            --warning-bg: #fff8e1;
+            --warning-border: #ffe082;
+            --warning-text: #856404;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* الهيدر */
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid var(--accent-color);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* مكان صورة الشعار */
+        .university-logo {
+            height: 55px;
+            width: auto;
+            object-fit: contain;
+            background: #fff;
+            padding: 4px;
+            border-radius: 6px;
+        }
+
+        .header-title h1 {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .header-title p {
+            font-size: 12px;
+            opacity: 0.85;
+        }
+
+        .btn-logout {
+            background-color: transparent;
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            background-color: #e74c3c;
+            border-color: #e74c3c;
+        }
+
+        /* حاوية المحتوى الرئيسي */
+        .container {
+            max-width: 650px;
+            width: 90%;
+            margin: 40px auto;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+            padding: 30px;
+            border: 1px solid #e1e8ed;
+            flex: 1;
+        }
+
+        /* بطاقة معلومات الطالب */
+        .student-info-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 25px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .info-item span {
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 14px;
+        }
+
+        /* خيار نوع التقديم (رسمي / سري) */
+        .type-selector {
+            display: flex;
+            gap: 15px;
+            margin-top: 5px;
+        }
+
+        .type-option {
+            flex: 1;
+            position: relative;
+        }
+
+        .type-option input[type="radio"] {
+            display: none;
+        }
+
+        .type-option label {
+            display: block;
+            padding: 12px;
+            text-align: center;
+            background: #f1f5f9;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 0;
+        }
+
+        .type-option input[type="radio"]:checked + label {
+            background-color: #e0f2fe;
+            border-color: var(--secondary-color);
+            color: var(--primary-color);
+        }
+
+        select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        select:focus, textarea:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(0, 85, 165, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--secondary-color);
+        }
+
+        /* رسالة نجاح وتوعوية */
+        .message-box {
+            display: none;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .success-box {
+            background-color: #e8f8f0;
+            border: 1px solid #a3e6cd;
+            color: #0e623b;
+            margin-bottom: 20px;
+        }
+
+        .awareness-box {
+            background-color: var(--warning-bg);
+            border: 1px solid var(--warning-border);
+            color: var(--warning-text);
+            line-height: 1.6;
+        }
+
+        .awareness-box h3 {
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        /* الفوتر */
+        .footer {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            text-align: center;
+            padding: 15px;
+            font-size: 13px;
+            margin-top: auto;
+            border-top: 3px solid var(--accent-color);
+        }
+
+        .footer a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 700;
+            transition: color 0.3s ease;
+        }
+
+        .footer a:hover {
+            color: #ffffff;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- الهيدر -->
+    <header class="header">
+        <div class="header-right">
+            <!-- يمكنك تغيير الرابط 'logo.png' إلى مسار صورة الشعار الخاصة بك -->
+            <img src="logo.png" alt="شعار جامعة الصالحية الجديدة" class="university-logo" onerror="this.style.display='none'">
+            <div class="header-title">
+                <h1>جامعة الصالحية الجديدة</h1>
+                <p>بوابة خدمة الشكاوى الطلابية</p>
+            </div>
+        </div>
+        <button class="btn-logout" id="logoutBtn">تسجيل الخروج</button>
+    </header>
+
+    <!-- المحتوى الرئيسي -->
+    <div class="container">
+        <!-- بيانات الطالب -->
+        <div class="student-info-card" id="studentInfo">
+            <div class="info-item">الاسم: <span id="infoName">-</span></div>
+            <div class="info-item">كود الطالب: <span id="infoCode">-</span></div>
+            <div class="info-item">الكلية: <span id="infoFaculty">-</span></div>
+            <div class="info-item">الهاتف: <span id="infoPhone">-</span></div>
+        </div>
+
+        <!-- رسالة النجاح -->
+        <div id="successBox" class="message-box success-box"></div>
+
+        <!-- الرسالة التوعوية وفترة الانتظار -->
+        <div id="awarenessBox" class="message-box awareness-box">
+            <h3>تنويه </h3>
+            <p>نشكر اهتمامك بتطوير بيئة الجامعة. حرصاً على إتاحة الفرصة لإدارة الجامعة لمراجعة جميع الطلبات والتعامل معها بجدية عالية، يمكنك تقديم شكوى جديدة واحدة فقط كل 24 ساعة.</p>
+            <br>
+            <p id="timerMessage"><strong>يرجى الانتظار لحين انتهاء مهلة الـ 24 ساعة لتقديم شكوى جديدة.</strong></p>
+        </div>
+
+        <!-- نموذج تقديم الشكوى -->
+        <form id="complaintForm">
+            <!-- نوع الشكوى -->
+            <div class="form-group">
+                <label>نوع التقديم:</label>
+                <div class="type-selector">
+                    <div class="type-option">
+                        <input type="radio" id="typeOfficial" name="complaintType" value="official" checked>
+                        <label for="typeOfficial">تقديم رسمي</label>
+                    </div>
+                    <div class="type-option">
+                        <input type="radio" id="typeSecret" name="complaintType" value="secret">
+                        <label for="typeSecret">تقديم سري</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- عنوان/فئة المشكلة -->
+            <div class="form-group">
+                <label for="category">عنوان/فئة المشكلة:</label>
+                <select id="category" required>
+                    <option value="" disabled selected>اختر فئة المشكلة...</option>
+                    <option value="تعليمية">تعليمية</option>
+                    <option value="تنظيمية">تنظيمية</option>
+                    <option value="إدارية">إدارية</option>
+                    <option value="ترفيهيه">ترفيهيه</option>
+                    <option value="أمنية">أمنية</option>
+                    <option value="أخري">أخري</option>
+                </select>
+            </div>
+
+            <!-- وصف المشكلة -->
+            <div class="form-group">
+                <label for="description">وصف المشكلة / الشكوى:</label>
+                <textarea id="description" placeholder="اكتب تفاصيل المشكلة بدقة..." required></textarea>
+            </div>
+
+            <button type="submit" id="submitBtn" class="btn-submit">إرسال الشكوى</button>
+        </form>
+    </div>
+
+    <!-- الفوتر -->
+    <footer class="footer">
+        جميع الحقوق محفوظة &copy; <a href="https://wa.me/201000000000" target="_blank" title="تواصل عبر واتساب">MHD</a>
+    </footer>
+
+    <script>
+        // إعدادات Supabase REST API
+        const SUPABASE_URL = "https://xyzrsgareswgtcehnbfi.supabase.co/rest/v1/";
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh5enJzZ2FyZXN3Z3RjZWhuYmZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1ODE0NzIsImV4cCI6MjEwNjE1NzQ3Mn0.kMdLDkMGyYKku9HukiSNAkru50-ZuUv98GN1uqYQtB8";
+
+        const headers = {
+            "apikey": SUPABASE_ANON_KEY,
+            "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+            "Content-Type": "application/json",
+            "Prefer": "return=minimal"
+        };
+
+        // التحقق من تسجيل الدخول
+        const sessionDataRaw = localStorage.getItem('studentSession');
+        if (!sessionDataRaw) {
+            window.location.href = 'index.html';
+        }
+
+        const sessionData = JSON.parse(sessionDataRaw);
+        const student = sessionData.student;
+
+        // عرض بيانات الطالب
+        document.getElementById('infoName').textContent = student.name;
+        document.getElementById('infoCode').textContent = student.student_code;
+        document.getElementById('infoFaculty').textContent = student.faculty;
+        document.getElementById('infoPhone').textContent = student.phone;
+
+        const complaintForm = document.getElementById('complaintForm');
+        const successBox = document.getElementById('successBox');
+        const awarenessBox = document.getElementById('awarenessBox');
+        const submitBtn = document.getElementById('submitBtn');
+
+        // فحص إمكانية التقديم فور تحميل الصفحة
+        checkEligibility();
+
+        async function checkEligibility() {
+            try {
+                const complaintUrl = `${SUPABASE_URL}complaints?student_code=eq.${encodeURIComponent(student.student_code)}&order=created_at.desc&limit=1&select=created_at`;
+                const res = await fetch(complaintUrl, { method: 'GET', headers });
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.length > 0) {
+                        const lastDate = new Date(data[0].created_at);
+                        const now = new Date();
+                        const diffHours = (now - lastDate) / (1000 * 60 * 60);
+
+                        if (diffHours < 24) {
+                            showWaitState();
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error("خطأ في التحقق من الشكاوى السابقة:", e);
+            }
+        }
+
+        function showWaitState() {
+            complaintForm.style.display = 'none';
+            awarenessBox.style.display = 'block';
+        }
+
+        // إرسال الشكوى
+        complaintForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const type = document.querySelector('input[name="complaintType"]:checked').value;
+            const category = document.getElementById('category').value;
+            const description = document.getElementById('description').value.trim();
+
+            if (!category || !description) {
+                alert('يرجى ملء جميع الحقول المطلوب إدخالها.');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'جاري الإرسال...';
+
+            const payload = {
+                student_code: student.student_code, // يربط كود الطالب بالشكوى سرياً كان أو رسمياً
+                type: type,
+                category: category,
+                description: description
+            };
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}complaints`, {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    // إخفاء النموذج
+                    complaintForm.style.display = 'none';
+
+                    // إظهار رسالة النجاح المخصصة
+                    if (type === 'secret') {
+                        successBox.textContent = 'تم إرسال شكوتك إلى إدارة الجامعة بشكل سري تماماً.';
+                    } else {
+                        successBox.textContent = 'تم إرسال شكوتك إلى الجامعة بشكل رسمي وسيتم الرد عليك في أقرب وقت.';
+                    }
+                    successBox.style.display = 'block';
+
+                    // إظهار الرسالة التوعوية
+                    awarenessBox.style.display = 'block';
+
+                } else {
+                    alert('حدث خطأ أثناء إرسال الشكوى، يرجى التكرار لاحقاً.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'إرسال الشكوى';
+                }
+            } catch (err) {
+                console.error(err);
+                alert('فشل الاتصال بالخادم، يرجى المحاولة لاحقاً.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'إرسال الشكوى';
+            }
+        });
+
+        // تسجيل الخروج
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('studentSession');
+            window.location.href = 'index.html';
+        });
+
+
+
+        
+    // منع القائمة المنسدلة عند الضغط بزر الفأرة الأيمن
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+    });
+
+    // منع اختصارات لوحة المفاتيح الخاصة بأدوات المطور
+    document.addEventListener('keydown', function(e) {
+        // منع F12
+        if (e.key === "F12") {
+            e.preventDefault();
+        }
+        // منع Ctrl+Shift+I / Ctrl+Shift+J / Ctrl+Shift+C
+        if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) {
+            e.preventDefault();
+        }
+        // منع Ctrl+U (عرض مصدر الصفحة)
+        if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) {
+            e.preventDefault();
+        }
+    });
+    setInterval(function() {
+        const startTime = performance.now();
+        debugger; // يوقف تنفيذ الكود إذا كانت أدوات المطور مفتوحة
+        const endTime = performance.now();
+        if (endTime - startTime > 100) {
+            // إذا اكتشف فتح F12، يتم توجيه المستخدم أو إعادة تحميل الصفحة
+            window.location.reload();
+        }
+    }, 1000);
+    </script>
+</body>
+</html>
